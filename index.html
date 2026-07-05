@@ -7,11 +7,41 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { 
-            background: #f0f2f5; 
-            padding: 30px 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
+body { 
+    background: linear-gradient(145deg, #f2f5f9 0%, #e2e8f0 50%, #dce2ed 100%);
+    min-height: 100vh;
+    padding: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Add floating blur effects */
+body::before {
+    content: '';
+    position: fixed;
+    top: -20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(147, 197, 253, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+}
         
         .container {
             max-width: 1200px;
@@ -518,16 +548,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // ===== PRODUCT DATA =====
-    const products = [
-        { id: 1, name: 'Summer T-Shirt', price: 177.00, img: 'https://via.placeholder.com/200x180/0d6efd/ffffff?text=T-Shirt' },
-        { id: 2, name: 'Warm Jacket', price: 245.00, img: 'https://via.placeholder.com/200x180/28a745/ffffff?text=Jacket' },
-        { id: 3, name: 'Leather Belt', price: 59.00, img: 'https://via.placeholder.com/200x180/fd7e14/ffffff?text=Belt' },
-        { id: 4, name: 'Winter Gloves', price: 39.99, img: 'https://via.placeholder.com/200x180/dc3545/ffffff?text=Gloves' },
-        { id: 5, name: 'Wool Scarf', price: 45.00, img: 'https://via.placeholder.com/200x180/6f42c1/ffffff?text=Scarf' },
-        { id: 6, name: 'Running Shoes', price: 129.99, img: 'https://via.placeholder.com/200x180/20c997/ffffff?text=Shoes' }
-    ];
 
+// ===== PRODUCT DATA =====
+const products = [
+    { id: 1, name: 'Summer T-Shirt', price: 177.00, img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop&crop=center' },
+    { id: 2, name: 'Warm Jacket', price: 245.00, img: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&h=300&fit=crop&crop=center' },
+    { id: 3, name: 'Leather Belt', price: 59.00, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop&crop=center' },
+    { id: 4, name: 'Winter Gloves', price: 39.99, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQznDmGw4fEpT8DPzseoFkaZRJ3zu09AXytnutXWGJcyg&s=10' },
+    { id: 5, name: 'Wool Scarf', price: 45.00, img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWo0b33wX5key2T6jQVQ79GESgfnrLBmbRPFoNE7ITCQ&s=10' },
+    { id: 6, name: 'Running Shoes', price: 129.99, img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop&crop=center' }
+];
     // ===== STATE =====
     let cart = JSON.parse(localStorage.getItem('vulnCart')) || [];
     let sessionId = localStorage.getItem('sessionId') || 'guest_' + Date.now();
@@ -720,43 +750,70 @@
         const count = cart.reduce((acc, i) => acc + (i.quantity || 1), 0);
         document.getElementById('cartCount').innerText = count;
     }
-
+    
     // ===== BUSINESS LOGIC VULNERABILITY 1: QUANTITY MANIPULATION =====
-    function adjustQuantity(productId, change) {
-        const item = cart.find(i => i.id === productId);
-        if (!item) {
-            alert('Add item to cart first!');
-            return;
-        }
-        // VULNERABLE: No validation for negative quantities
-        item.quantity += change;
-        if (item.quantity < 0) item.quantity = -100;
-        localStorage.setItem('vulnCart', JSON.stringify(cart));
-        renderCart();
-        updateCartCount();
-        console.warn('Quantity Manipulation: ' + item.name + ' quantity set to ' + item.quantity);
+function adjustQuantity(productId, change) {
+    const item = cart.find(i => i.id === productId);
+    if (!item) {
+        alert('Add item to cart first!');
+        return;
     }
+    // VULNERABLE: No validation for negative quantities
+    item.quantity += change;
+    // Allow negative quantities but don't hard reset to -100
+    // This keeps the vulnerability but makes + button work
+    localStorage.setItem('vulnCart', JSON.stringify(cart));
+    renderCart();
+    updateCartCount();
+    console.warn('Quantity Manipulation: ' + item.name + ' quantity set to ' + item.quantity);
+}
 
-    // ===== BUSINESS LOGIC VULNERABILITY 2: COUPON REUSE =====
-    function applyCouponReuse() {
-        const code = document.getElementById('couponInput').value;
-        if (!code.trim()) return;
-        
-        appliedCoupons.push(code);
-        localStorage.setItem('appliedCoupons', JSON.stringify(appliedCoupons));
-        
-        let total = parseFloat(document.getElementById('cartTotal').value) || 0;
-        document.getElementById('couponStatus').innerHTML = 
-            `Coupon applied ${appliedCoupons.length} times! ${appliedCoupons.length * 20}% total discount`;
-        renderCart();
-        console.warn('Coupon Reuse: Applied ' + appliedCoupons.length + ' times');
+// ===== BUSINESS LOGIC VULNERABILITY 2: COUPON REUSE =====
+function applyCouponReuse() {
+    const code = document.getElementById('couponInput').value;
+    if (!code.trim()) return;
+    
+    // Check if coupon was used today
+    const lastUsedDate = localStorage.getItem('couponLastUsedDate');
+    const today = new Date().toDateString();
+    
+    if (lastUsedDate !== today) {
+        // Reset coupon count if it's a new day
+        localStorage.setItem('appliedCoupons', JSON.stringify([]));
+        localStorage.setItem('couponLastUsedDate', today);
+        appliedCoupons = [];
     }
+    
+    appliedCoupons.push(code);
+    localStorage.setItem('appliedCoupons', JSON.stringify(appliedCoupons));
+    
+    let total = parseFloat(document.getElementById('cartTotal').value) || 0;
+    document.getElementById('couponStatus').innerHTML = 
+        `Coupon applied ${appliedCoupons.length} times today! ${appliedCoupons.length * 20}% total discount`;
+    renderCart();
+    console.warn('Coupon Reuse: Applied ' + appliedCoupons.length + ' times today');
+}
 
-    function applyCouponMultiple(times) {
-        for(let i = 0; i < times; i++) {
-            applyCouponReuse();
-        }
+function applyCouponMultiple(times) {
+    // Limit to 5 times per click to prevent abuse
+    const maxTimes = Math.min(times, 5);
+    for(let i = 0; i < maxTimes; i++) {
+        applyCouponReuse();
     }
+}
+
+// Initialize coupon tracking on page load
+function initCouponTracking() {
+    const today = new Date().toDateString();
+    const lastUsedDate = localStorage.getItem('couponLastUsedDate');
+    
+    if (lastUsedDate !== today) {
+        // Reset coupon count for new day
+        localStorage.setItem('appliedCoupons', JSON.stringify([]));
+        localStorage.setItem('couponLastUsedDate', today);
+        appliedCoupons = [];
+    }
+}
 
     // ===== BUSINESS LOGIC VULNERABILITY 3: GIFT CARD MANIPULATION =====
     function applyGiftCard() {
@@ -876,14 +933,16 @@
 
     // ===== INITIALIZATION =====
     function init() {
+    
         checkOpenRedirect();
-        checkSessionFixation();
-        renderProducts();
-        renderCart();
-        updateCartCount();
-        checkDomXss();
-        updateGiftCardDisplay();
-        updatePointsDisplay();
+    checkSessionFixation();
+    initCouponTracking(); // Add this line
+    renderProducts();
+    renderCart();
+    updateCartCount();
+    checkDomXss();
+    updateGiftCardDisplay();
+    updatePointsDisplay();
         
         console.log('%cVulnerable Shopping Cart Loaded', 'color: red; font-size: 20px; font-weight: bold;');
         console.log('%cVulnerabilities Active:', 'color: orange; font-size: 16px;');
