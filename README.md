@@ -1,10 +1,10 @@
-## Overview
+# Vulnerable Shopping Cart
 
 Vulnerable Shopping Cart is a deliberately insecure e-commerce application built for cybersecurity education and penetration testing practice. It demonstrates 16 common web application vulnerabilities and business logic flaws in a realistic shopping cart environment.
 
 ![Image](https://github.com/yogsec/Vulnerable-shopping-Cart/blob/main/Screenshot%20From%202026-07-02%2023-51-17.png?raw=true)
 
-Visit Vulnerable Shopping Cart: [https://yogsec.github.io/Vulnerable-Shopping-Cart/](https://yogsec.github.io/Vulnerable-Shopping-Cart/)
+Try Vulnerable Shopping Cart Web App: [https://yogsec.github.io/Vulnerable-Shopping-Cart/](https://yogsec.github.io/Vulnerable-Shopping-Cart/)
 
 ---
 
@@ -43,3 +43,7 @@ This application is designed for educational purposes only. Users are expected t
 5. Practice responsible disclosure
 
 **Remember:** This is a vulnerable application for learning. Always practice responsible security testing and never use these techniques against systems without authorization.
+
+---
+
+LinkTree: [https://linktr.ee/abhinavsingwal](https://linktr.ee/abhinavsingwal)
