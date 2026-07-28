@@ -36,11 +36,10 @@ Try Vulnerable Shopping Cart Web App: [https://yogsec.github.io/Vulnerable-Shopp
 
 This application is designed for educational purposes only. Users are expected to:
 
-1. Use only in authorized environments
-2. Never deploy in production
-3. Respect all applicable laws
-4. Use knowledge for defensive security only
-5. Practice responsible disclosure
+1. Never deploy in production
+2. Respect all applicable laws
+3. Use knowledge for defensive security only
+4. Practice responsible disclosure
 
 **Remember:** This is a vulnerable application for learning. Always practice responsible security testing and never use these techniques against systems without authorization.
 
